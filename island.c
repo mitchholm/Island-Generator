@@ -3,73 +3,14 @@
 #include <time.h>
 #include <string.h>
 #include "bmpfile.c"
+#include "nargs.c"
 
 #define VARIATION 16
-#define THRESHOLD1 5
-#define THRESHOLD2 10
-#define ITERATIONS 5
 
-char** expand(int* sizep, char** oldMap){
-	int size = *sizep * 2 - 1;
-	*sizep = *sizep * 2 -1;
-	char** map = (char**)calloc(size, sizeof(char*));
-	for(int i=0; i < size; i++)
-		map[i] = (char*)calloc(size, sizeof(char));
-	for(int x = 0; x < size - 1; ++x)
-		for(int y = 0; y < size -1; ++y){
-			map[x][y] = oldMap[(x + 1)/2][(y+1)/2];
-		}
-	for(int x = 1; x < size - 1; x+=2)
-		for(int y = 0; y < size -1; y+=2){
-			map[x][y] = (map[x-1][y] + map[x+1][y] + ((rand()%3))) / 2;
-		}
-	for(int x = 0; x < size - 1; x+=2)
-		for(int y = 1; y < size -1; y+=2){
-			map[x][y] = (map[x][y-1] + map[x][y+1] + ((rand()%3))) / 2;
-		}
-	for(int x = 1; x < size - 1; x+=2)
-		for(int y = 1; y < size -1; y+=2){
-			map[x][y] = (map[x][y-1] + map[x][y+1] + map[x-1][y] + map[x+1][y] + ((rand()%3))) / 4;
-		}
-	free(oldMap);
-	return map;
-}
+int starting = 8;
+int totalIters = 5;
 
-void printHex(int size, char** map){
-	for(int x = 0; x < size; ++x){
-		for(int y = 0; y < size; ++y)
-			printf("%x ", map[x][y]);
-		printf("\n");
-	}
-}
-void printB(int size, char** map){
-	for(int x = 0; x < size; ++x){
-		for(int y = 0; y < size; ++y)
-			if(map[x][y] >= THRESHOLD2) 
-				printf("# ");
-			else if(map[x][y] >= THRESHOLD1) 
-				printf("? ");
-			else
-				printf(" ");
-		printf("\n");
-	}
-}
-
-int main(int n, char** args){
-	srand(time(NULL));
-	//Midpoint displacement theorem
-	int size = 8;
-	char** map = (char**)calloc(size, sizeof(char*));
-	for(int i=0; i < size; i++)
-		map[i] = (char*)calloc(size, sizeof(char));
-	//This loop seeds the random spots
-	for(int x = 0; x < size -1; ++x)
-		for(int y = 0; y < size -1; ++y)
-			if(x != 0 && y != 0)
-				map[x][y] = rand() % VARIATION;
-	for(int i = 0; i < ITERATIONS; ++i)
-		map = expand(&size, map);
-	//printB(size, map);
+void makeBitmap(int size, char** map, char* name){
 	bmpfile_t* b = bmp_create((uint32_t)size, (uint32_t)size, (uint32_t)32);
 	rgb_pixel_t pGreen = {(uint8_t)0,(uint8_t)180,(uint8_t)0,(uint8_t)255};
 	rgb_pixel_t pGrey = {(uint8_t)200,(uint8_t)200,(uint8_t)200,(uint8_t)255};
@@ -110,5 +51,81 @@ int main(int n, char** args){
 					bmp_set_pixel(b,x,y,pBlue);
 					break;
 			}
-	bmp_save(b,"island.bmp");
+	bmp_save(b,name);
+}
+
+char** expand(int* sizep, char** oldMap){
+	int size = *sizep * 2 - 1;
+	*sizep = *sizep * 2 -1;
+	char** map = (char**)calloc(size, sizeof(char*));
+	for(int i=0; i < size; i++)
+		map[i] = (char*)calloc(size, sizeof(char));
+	for(int x = 0; x < size - 1; ++x)
+		for(int y = 0; y < size -1; ++y){
+			map[x][y] = oldMap[(x + 1)/2][(y+1)/2];
+		}
+	for(int x = 1; x < size - 1; x+=2)
+		for(int y = 0; y < size -1; y+=2){
+			map[x][y] = (map[x-1][y] + map[x+1][y] + ((rand()%3))) / 2;
+		}
+	for(int x = 0; x < size - 1; x+=2)
+		for(int y = 1; y < size -1; y+=2){
+			map[x][y] = (map[x][y-1] + map[x][y+1] + ((rand()%3))) / 2;
+		}
+	for(int x = 1; x < size - 1; x+=2)
+		for(int y = 1; y < size -1; y+=2){
+			map[x][y] = (map[x][y-1] + map[x][y+1] + map[x-1][y] + map[x+1][y] + ((rand()%3))) / 4;
+		}
+	free(oldMap);
+	return map;
+}
+
+void printHex(int size, char** map){
+	for(int x = 0; x < size; ++x){
+		for(int y = 0; y < size; ++y)
+			printf("%x ", map[x][y]);
+		printf("\n");
+	}
+}
+// void printB(int size, char** map){
+// 	for(int x = 0; x < size; ++x){
+// 		for(int y = 0; y < size; ++y)
+// 			if(map[x][y] >= THRESHOLD2) 
+// 				printf("# ");
+// 			else if(map[x][y] >= THRESHOLD1) 
+// 				printf("? ");
+// 			else
+// 				printf(" ");
+// 		printf("\n");
+// 	}
+// }
+
+int main(int n, char** args){
+	srand(time(NULL));
+	//Midpoint displacement theorem
+	if(isPresent(n,args,"size"))
+		starting = argInt(n,args,"size");
+	if(isPresent(n,args,"i")){
+		int temp = argInt(n,args,"i");
+		if(temp < 9)
+			totalIters = temp;
+		else
+			printf("Max iterations: 8, defaulting to 5\n");
+	}
+	int size = starting;
+	char** map = (char**)calloc(size, sizeof(char*));
+	for(int i=0; i < size; i++)
+		map[i] = (char*)calloc(size, sizeof(char));
+	//This loop seeds the random spots
+	for(int x = 0; x < size -1; ++x)
+		for(int y = 0; y < size -1; ++y)
+			if(x != 0 && y != 0)
+				map[x][y] = rand() % VARIATION;
+	for(int i = 0; i < totalIters; ++i)
+		map = expand(&size, map);
+	//printB(size, map);
+	char* name ="island.bmp";
+	if(isPresent(n,args,"name"))
+		name = argString(n,args,"name");
+	makeBitmap(size, map, name);
 }
