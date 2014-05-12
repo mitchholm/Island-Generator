@@ -10,15 +10,19 @@
 int starting = 8;
 int totalIters = 5;
 
+rgb_pixel_t makePixel(int r, int g, int b){
+	return (rgb_pixel_t){(uint8_t)r,(uint8_t)g,(uint8_t)b,(uint8_t)255};
+}
+
 void makeBitmap(int size, char** map, char* name){
 	bmpfile_t* b = bmp_create((uint32_t)size, (uint32_t)size, (uint32_t)32);
-	rgb_pixel_t pGreen = {(uint8_t)0,(uint8_t)180,(uint8_t)0,(uint8_t)255};
-	rgb_pixel_t pGrey = {(uint8_t)200,(uint8_t)200,(uint8_t)200,(uint8_t)255};
-	rgb_pixel_t pDGreen = {(uint8_t)0,(uint8_t)100,(uint8_t)0,(uint8_t)255};
-	rgb_pixel_t pYellow = {(uint8_t)0,(uint8_t)180,(uint8_t)180,(uint8_t)255};
-	rgb_pixel_t pBlue = {(uint8_t)180,(uint8_t)0,(uint8_t)0,(uint8_t)255};
-	rgb_pixel_t pLBlue = {(uint8_t)250,(uint8_t)0,(uint8_t)0,(uint8_t)255};
-	rgb_pixel_t pDGrey = {(uint8_t)100,(uint8_t)100,(uint8_t)100,(uint8_t)255};
+	rgb_pixel_t pGreen = makePixel(0,200,0);
+	rgb_pixel_t pGrey = makePixel(200,200,200);
+	rgb_pixel_t pDGreen = makePixel(0,100,0);
+	rgb_pixel_t pYellow = makePixel(0,180,180);
+	rgb_pixel_t pBlue = makePixel(180,0,0);
+	rgb_pixel_t pLBlue = makePixel(250,0,0);
+	rgb_pixel_t pDGrey = makePixel(100,100,100);
 	for(int x = 0; x < size; ++x)
 		for(int y = 0;y < size; ++y)
 			switch(map[x][y]){
