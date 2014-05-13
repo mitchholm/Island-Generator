@@ -14,6 +14,8 @@ A hobby project. I want to create a somewhat realistic terrain generator from ab
 
 ![Island bmp](https://raw.githubusercontent.com/mholmPurdue/Island-Generator/master/island.png)
 
+![Island bmp](https://raw.githubusercontent.com/mholmPurdue/Island-Generator/master/test.png)
+
 ##todo
 * Third dimension? I'd have to port it all to javascript, but thats really the only way I can see this going. Might just be done with it
 * ~~I plan on rewriting part of the randomization code to prevent things from getting too squarish. Performance is fast enough that the extra computation shouldn't be an issue~~
