@@ -14,7 +14,7 @@ A hobby project. I want to create a somewhat realistic terrain generator from ab
 
 ![Island bmp](https://raw.githubusercontent.com/mholmPurdue/Island-Generator/master/island.png)
 
-![Island bmp](https://raw.githubusercontent.com/mholmPurdue/Island-Generator/master/test.png)
+![Island bmp](https://raw.githubusercontent.com/mholmPurdue/Island-Generator/master/norm.png)
 
 ##todo
 * Third dimension? I'd have to port it all to javascript, but thats really the only way I can see this going. Might just be done with it
